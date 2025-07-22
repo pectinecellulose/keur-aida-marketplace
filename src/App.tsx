@@ -5,9 +5,23 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { AuthProvider } from "@/hooks/use-auth";
+import { CartProvider } from "@/hooks/use-cart";
+import { FavoritesProvider } from "@/hooks/use-favorites";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Categories from "./pages/Categories";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import Favorites from "./pages/Favorites";
+import Dashboard from "./pages/Dashboard";
+import HowItWorks from "./pages/HowItWorks";
+import PostAd from "./pages/PostAd";
+import Security from "./pages/Security";
+import SellerTips from "./pages/SellerTips";
+import Help from "./pages/Help";
+import Contact from "./pages/Contact";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -16,20 +30,36 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="light" storageKey="keuraida-ui-theme">
       <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/category/:categorySlug" element={<Categories />} />
-              <Route path="/category/:categorySlug/:subcategorySlug" element={<Categories />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
+        <CartProvider>
+          <FavoritesProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/category/:categorySlug" element={<Categories />} />
+                  <Route path="/category/:categorySlug/:subcategorySlug" element={<Categories />} />
+                  <Route path="/cart" element={<Cart />} />
+                  <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/favorites" element={<Favorites />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/how-it-works" element={<HowItWorks />} />
+                  <Route path="/post-ad" element={<PostAd />} />
+                  <Route path="/security" element={<Security />} />
+                  <Route path="/seller-tips" element={<SellerTips />} />
+                  <Route path="/help" element={<Help />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </TooltipProvider>
+          </FavoritesProvider>
+        </CartProvider>
       </AuthProvider>
     </ThemeProvider>
   </QueryClientProvider>

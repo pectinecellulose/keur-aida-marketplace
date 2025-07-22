@@ -1,0 +1,332 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Upload, X, MapPin, DollarSign, Camera } from 'lucide-react';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useAuth } from '@/hooks/use-auth';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+export default function PostAd() {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [images, setImages] = useState<string[]>([]);
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+    loadCategories();
+  }, [user, navigate]);
+
+  const loadCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('id, name, slug')
+        .eq('is_active', true)
+        .order('name');
+
+      if (error) throw error;
+      setCategories(data || []);
+    } catch (error) {
+      console.error('Error loading categories:', error);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!user) return;
+
+    setIsLoading(true);
+    const formData = new FormData(e.currentTarget);
+
+    try {
+      const { error } = await supabase
+        .from('ads')
+        .insert({
+          user_id: user.id,
+          category_id: formData.get('category') as string,
+          title: formData.get('title') as string,
+          description: formData.get('description') as string,
+          price: parseFloat(formData.get('price') as string),
+          currency: 'XOF',
+          condition: formData.get('condition') as string,
+          location: formData.get('location') as string,
+          city: formData.get('city') as string,
+          contact_phone: formData.get('phone') as string,
+          contact_email: formData.get('email') as string,
+          is_negotiable: formData.get('negotiable') === 'on',
+          images: images,
+          status: 'active'
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Annonce publiée !",
+        description: "Votre annonce a été publiée avec succès.",
+      });
+      
+      navigate('/dashboard');
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de publier l'annonce.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    // Simulate image upload - in real app, upload to storage
+    Array.from(files).forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImages(prev => [...prev, e.target?.result as string]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  if (!user) return null;
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl font-bold mb-8">Publier une annonce</h1>
+
+          <form onSubmit={handleSubmit} className="space-y-8">
+            {/* Images */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Camera className="w-5 h-5" />
+                  Photos (Jusqu'à 10 photos)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                  {images.map((image, index) => (
+                    <div key={index} className="relative aspect-square bg-muted rounded-lg overflow-hidden">
+                      <img src={image} alt={`Photo ${index + 1}`} className="w-full h-full object-cover" />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-1 right-1 h-6 w-6"
+                        onClick={() => setImages(prev => prev.filter((_, i) => i !== index))}
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  ))}
+                  {images.length < 10 && (
+                    <div className="aspect-square border-2 border-dashed border-muted-foreground/25 rounded-lg flex items-center justify-center">
+                      <label className="cursor-pointer flex flex-col items-center">
+                        <Upload className="w-8 h-8 text-muted-foreground mb-2" />
+                        <span className="text-sm text-muted-foreground">Ajouter</span>
+                        <input
+                          type="file"
+                          multiple
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleImageUpload}
+                        />
+                      </label>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Basic Info */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Informations de base</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="title">Titre de l'annonce *</Label>
+                  <Input 
+                    id="title" 
+                    name="title" 
+                    placeholder="Ex: iPhone 14 Pro Max 256GB comme neuf"
+                    required 
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="category">Catégorie *</Label>
+                  <Select name="category" required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choisir une catégorie" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="description">Description *</Label>
+                  <Textarea 
+                    id="description" 
+                    name="description"
+                    placeholder="Décrivez votre produit en détail..."
+                    rows={5}
+                    required 
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="condition">État</Label>
+                  <Select name="condition">
+                    <SelectTrigger>
+                      <SelectValue placeholder="État du produit" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="new">Neuf</SelectItem>
+                      <SelectItem value="like-new">Comme neuf</SelectItem>
+                      <SelectItem value="good">Bon état</SelectItem>
+                      <SelectItem value="fair">État correct</SelectItem>
+                      <SelectItem value="poor">Mauvais état</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Price */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <DollarSign className="w-5 h-5" />
+                  Prix
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="price">Prix (FCFA) *</Label>
+                  <Input 
+                    id="price" 
+                    name="price" 
+                    type="number" 
+                    placeholder="Ex: 50000"
+                    required 
+                  />
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Checkbox id="negotiable" name="negotiable" />
+                  <Label htmlFor="negotiable">Prix négociable</Label>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Location */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MapPin className="w-5 h-5" />
+                  Localisation
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="city">Ville *</Label>
+                    <Input 
+                      id="city" 
+                      name="city" 
+                      placeholder="Ex: Dakar"
+                      required 
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="location">Quartier/Zone *</Label>
+                    <Input 
+                      id="location" 
+                      name="location" 
+                      placeholder="Ex: Plateau, Almadies"
+                      required 
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Contact */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Contact</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="phone">Téléphone *</Label>
+                    <Input 
+                      id="phone" 
+                      name="phone" 
+                      type="tel"
+                      placeholder="Ex: 77 123 45 67"
+                      required 
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="email">Email</Label>
+                    <Input 
+                      id="email" 
+                      name="email" 
+                      type="email"
+                      defaultValue={user.email || ''}
+                      placeholder="votre@email.com"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="flex gap-4">
+              <Button type="submit" size="lg" disabled={isLoading} className="flex-1">
+                {isLoading ? "Publication..." : "Publier l'annonce"}
+              </Button>
+              <Button type="button" variant="outline" size="lg" onClick={() => navigate('/dashboard')}>
+                Annuler
+              </Button>
+            </div>
+          </form>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+}

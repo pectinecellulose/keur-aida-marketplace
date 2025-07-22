@@ -107,18 +107,16 @@ export function Header() {
           {/* Actions */}
           <div className="flex items-center space-x-2">
             <div className="hidden md:flex items-center space-x-1">
-              <Button variant="ghost" size="icon" className="relative">
-                <Heart className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-xs text-primary-foreground flex items-center justify-center">
-                  3
-                </span>
+              <Button variant="ghost" size="icon" className="relative" asChild>
+                <Link to="/favorites">
+                  <Heart className="h-5 w-5" />
+                </Link>
               </Button>
               
-              <Button variant="ghost" size="icon" className="relative">
-                <ShoppingCart className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-xs text-primary-foreground flex items-center justify-center">
-                  2
-                </span>
+              <Button variant="ghost" size="icon" className="relative" asChild>
+                <Link to="/cart">
+                  <ShoppingCart className="h-5 w-5" />
+                </Link>
               </Button>
             </div>
 
