@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { Search, ShoppingCart, User, Menu, X, Heart, MapPin } from "lucide-react"
+import { Link, useNavigate } from "react-router-dom"
+import { Search, ShoppingCart, User, Menu, X, Heart, LogOut, Settings, Package } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
@@ -11,31 +12,41 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useAuth } from "@/hooks/use-auth"
 
 const categories = [
   {
     title: "Produits",
     items: [
-      { name: "Téléphones & Tablettes", href: "/category/phones" },
-      { name: "Informatique & Électronique", href: "/category/electronics" },
-      { name: "Mode & Beauté", href: "/category/fashion" },
-      { name: "Maison & Meubles", href: "/category/home" },
-      { name: "Électroménager", href: "/category/appliances" },
+      { name: "Téléphones & Tablettes", href: "/category/produits-a-vendre/telephones-tablettes" },
+      { name: "Informatique & Électronique", href: "/category/produits-a-vendre/informatique-electronique" },
+      { name: "Mode & Beauté", href: "/category/produits-a-vendre/mode-beaute" },
+      { name: "Maison & Meubles", href: "/category/produits-a-vendre/maison-meubles" },
+      { name: "Électroménager", href: "/category/produits-a-vendre/electromenager" },
     ]
   },
   {
     title: "Services",
     items: [
-      { name: "Véhicules", href: "/category/vehicles" },
-      { name: "Immobilier", href: "/category/real-estate" },
-      { name: "Emploi & Services", href: "/category/jobs" },
-      { name: "Animaux", href: "/category/pets" },
+      { name: "Véhicules", href: "/category/vehicules" },
+      { name: "Immobilier", href: "/category/immobilier" },
+      { name: "Emploi & Services", href: "/category/emploi-services" },
+      { name: "Animaux", href: "/category/animaux" },
     ]
   }
 ]
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { user, signOut } = useAuth()
+  const navigate = useNavigate()
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-lg">
@@ -113,9 +124,35 @@ export function Header() {
 
             <ThemeToggle />
 
-            <Button variant="ghost" size="icon" className="hidden md:flex">
-              <User className="h-5 w-5" />
-            </Button>
+            {/* User Menu */}
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="hidden md:flex">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+                    <Package className="mr-2 h-4 w-4" />
+                    <span>Mes annonces</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/profile")}>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Profil</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={signOut}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Déconnexion</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
+                Connexion
+              </Button>
+            )}
 
             {/* Mobile menu button */}
             <Button
