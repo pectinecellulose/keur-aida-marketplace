@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import { Search, Filter, SlidersHorizontal, Grid, List, Heart, ShoppingCart, MapPin, Star, Clock } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Search, Filter, SlidersHorizontal, Grid, List, Heart, ShoppingCart, MapPin, Clock } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
@@ -37,17 +37,18 @@ interface Category {
   name: string;
   slug: string;
   emoji: string;
+  description?: string;
 }
 
-const AllProducts = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+const CategoryPage = () => {
+  const { categorySlug, subcategorySlug } = useParams<{ categorySlug: string; subcategorySlug?: string }>();
+  const navigate = useNavigate();
   const [ads, setAds] = useState<Ad[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [category, setCategory] = useState<Category | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
-  const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'created_at');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('created_at');
   const [priceRange, setPriceRange] = useState([0, 10000000]);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedCondition, setSelectedCondition] = useState<string[]>([]);
@@ -59,34 +60,36 @@ const AllProducts = () => {
 
   useEffect(() => {
     fetchData();
-  }, [searchTerm, selectedCategory, sortBy, selectedCondition, selectedLocation]);
+  }, [categorySlug, subcategorySlug, searchTerm, sortBy, selectedCondition, selectedLocation]);
 
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      // Fetch categories
-      const { data: categoriesData } = await supabase
+      // Fetch category
+      const { data: categoryData } = await supabase
         .from('categories')
-        .select('id, name, slug, emoji')
-        .eq('is_active', true);
+        .select('*')
+        .eq('slug', categorySlug)
+        .eq('is_active', true)
+        .maybeSingle();
 
-      if (categoriesData) {
-        setCategories(categoriesData);
+      if (!categoryData) {
+        navigate('/');
+        return;
       }
+
+      setCategory(categoryData);
 
       // Build ads query
       let query = supabase
         .from('ads')
         .select('*')
-        .eq('status', 'active');
+        .eq('status', 'active')
+        .eq('category_id', categoryData.id);
 
       // Apply filters
       if (searchTerm) {
         query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
-      }
-      
-      if (selectedCategory) {
-        query = query.eq('category_id', selectedCategory);
       }
 
       if (selectedCondition.length > 0) {
@@ -127,19 +130,9 @@ const AllProducts = () => {
     }
   };
 
-  const updateSearchParams = (key: string, value: string) => {
-    const params = new URLSearchParams(searchParams);
-    if (value) {
-      params.set(key, value);
-    } else {
-      params.delete(key);
-    }
-    setSearchParams(params);
-  };
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    updateSearchParams('q', searchTerm);
+    fetchData();
   };
 
   const handleAddToCart = async (adId: string) => {
@@ -180,8 +173,24 @@ const AllProducts = () => {
       <Header />
       
       <main className="container mx-auto px-4 py-8">
+        {/* Breadcrumb */}
+        <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-6">
+          <button onClick={() => navigate('/')} className="hover:text-foreground">
+            Accueil
+          </button>
+          <span>/</span>
+          {category && (
+            <span className="text-foreground">{category.emoji} {category.name}</span>
+          )}
+        </div>
+
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-4">Tous les produits</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-4 flex items-center">
+            {category?.emoji} {category?.name}
+          </h1>
+          {category?.description && (
+            <p className="text-muted-foreground mb-4">{category.description}</p>
+          )}
           <p className="text-muted-foreground">{ads.length} produits trouvés</p>
         </div>
 
@@ -191,7 +200,7 @@ const AllProducts = () => {
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Rechercher des produits..."
+                placeholder="Rechercher dans cette catégorie..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -212,31 +221,8 @@ const AllProducts = () => {
             <div className="border-t border-border pt-4 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Catégorie</label>
-                  <Select value={selectedCategory} onValueChange={(value) => {
-                    setSelectedCategory(value);
-                    updateSearchParams('category', value);
-                  }}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Toutes les catégories" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">Toutes les catégories</SelectItem>
-                      {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.emoji} {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
                   <label className="text-sm font-medium mb-2 block">Trier par</label>
-                  <Select value={sortBy} onValueChange={(value) => {
-                    setSortBy(value);
-                    updateSearchParams('sort', value);
-                  }}>
+                  <Select value={sortBy} onValueChange={setSortBy}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -326,14 +312,14 @@ const AllProducts = () => {
           </div>
         ) : ads.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-lg text-muted-foreground">Aucun produit trouvé</p>
+            <p className="text-lg text-muted-foreground">Aucun produit trouvé dans cette catégorie</p>
             <p className="text-sm text-muted-foreground mt-2">Essayez de modifier vos critères de recherche</p>
           </div>
         ) : (
           <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' : 'space-y-4'}>
             {ads.map((ad) => (
               <Card key={ad.id} className={`group cursor-pointer hover:shadow-lg transition-all duration-300 ${viewMode === 'list' ? 'flex' : ''}`}
-                    onClick={() => window.location.href = `/product/${ad.id}`}>
+                    onClick={() => navigate(`/product/${ad.id}`)}>
                 <div className={`relative overflow-hidden ${viewMode === 'list' ? 'w-48 flex-shrink-0' : ''}`}>
                   <img
                     src={ad.images[0] || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&fit=crop'}
@@ -357,6 +343,7 @@ const AllProducts = () => {
                       className="h-8 w-8"
                       onClick={(e) => {
                         e.preventDefault();
+                        e.stopPropagation();
                         handleToggleFavorite(ad.id);
                       }}
                     >
@@ -401,6 +388,7 @@ const AllProducts = () => {
                       size="sm"
                       onClick={(e) => {
                         e.preventDefault();
+                        e.stopPropagation();
                         handleAddToCart(ad.id);
                       }}
                       disabled={cartLoading}
@@ -421,4 +409,4 @@ const AllProducts = () => {
   );
 };
 
-export default AllProducts;
+export default CategoryPage;

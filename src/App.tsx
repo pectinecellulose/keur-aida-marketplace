@@ -10,6 +10,7 @@ import { FavoritesProvider } from "@/hooks/use-favorites";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Categories from "./pages/Categories";
+import CategoryPage from "./pages/CategoryPage";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Favorites from "./pages/Favorites";
@@ -45,8 +46,8 @@ const App = () => (
                   <Route path="/all-products" element={<AllProducts />} />
                   <Route path="/product/:id" element={<ProductDetail />} />
                   <Route path="/newsletter" element={<Newsletter />} />
-                  <Route path="/category/:categorySlug" element={<Categories />} />
-                  <Route path="/category/:categorySlug/:subcategorySlug" element={<Categories />} />
+                  <Route path="/category/:categorySlug" element={<CategoryPage />} />
+                  <Route path="/category/:categorySlug/:subcategorySlug" element={<CategoryPage />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/favorites" element={<Favorites />} />

@@ -1,53 +1,73 @@
-import { Smartphone, Laptop, Car, Home, Briefcase, Heart, TrendingUp, Zap } from "lucide-react"
+import { useState, useEffect } from "react"
+import { TrendingUp, Zap } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { supabase } from "@/integrations/supabase/client"
 
-const categories = [
-  {
-    icon: Smartphone,
-    name: "Téléphones & Tablettes",
-    count: "8,234",
-    color: "from-blue-500 to-cyan-500",
-    href: "/category/phones"
-  },
-  {
-    icon: Laptop,
-    name: "Informatique & Électronique",
-    count: "5,672",
-    color: "from-purple-500 to-indigo-500",
-    href: "/category/electronics"
-  },
-  {
-    icon: Car,
-    name: "Véhicules",
-    count: "3,456",
-    color: "from-red-500 to-rose-500",
-    href: "/category/vehicles"
-  },
-  {
-    icon: Home,
-    name: "Immobilier",
-    count: "2,890",
-    color: "from-green-500 to-emerald-500",
-    href: "/category/real-estate"
-  },
-  {
-    icon: Briefcase,
-    name: "Emploi & Services",
-    count: "4,123",
-    color: "from-orange-500 to-amber-500",
-    href: "/category/jobs"
-  },
-  {
-    icon: Heart,
-    name: "Mode & Beauté",
-    count: "6,789",
-    color: "from-pink-500 to-rose-500",
-    href: "/category/fashion"
-  }
-]
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  emoji: string;
+  ads_count?: number;
+}
 
 export function CategoriesSection() {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('id, name, slug, emoji')
+        .eq('is_active', true)
+        .order('display_order')
+        .limit(6);
+
+      if (error) throw error;
+
+      // Fetch ads count for each category
+      const categoriesWithCount = await Promise.all(
+        (data || []).map(async (category) => {
+          const { count } = await supabase
+            .from('ads')
+            .select('*', { count: 'exact', head: true })
+            .eq('category_id', category.id)
+            .eq('status', 'active');
+          
+          return {
+            ...category,
+            ads_count: count || 0
+          };
+        })
+      );
+
+      setCategories(categoriesWithCount);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <section className="py-20 bg-surface">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
+            <p className="mt-4 text-muted-foreground">Chargement des catégories...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-20 bg-surface">
       <div className="container mx-auto px-4">
@@ -73,17 +93,20 @@ export function CategoriesSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {categories.map((category, index) => (
             <Card 
-              key={category.name}
+              key={category.id}
               className="group cursor-pointer border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 animate-fade-in-up bg-card/50 backdrop-blur-sm"
               style={{ animationDelay: `${index * 0.1}s` }}
+              onClick={() => window.location.href = `/category/${category.slug}`}
             >
               <CardContent className="p-8">
                 <div className="flex items-center justify-between mb-6">
-                  <div className={`p-4 rounded-2xl bg-gradient-to-br ${category.color} shadow-lg`}>
-                    <category.icon className="w-8 h-8 text-white" />
+                  <div className="p-4 rounded-2xl bg-gradient-to-br from-primary to-primary/80 shadow-lg">
+                    <span className="text-4xl">{category.emoji}</span>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-foreground">{category.count}</div>
+                    <div className="text-2xl font-bold text-foreground">
+                      {new Intl.NumberFormat('fr-FR').format(category.ads_count || 0)}
+                    </div>
                     <div className="text-sm text-muted-foreground">annonces</div>
                   </div>
                 </div>
@@ -109,7 +132,12 @@ export function CategoriesSection() {
         </div>
 
         <div className="text-center animate-fade-in" style={{ animationDelay: '0.8s' }}>
-          <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+          <Button 
+            size="lg" 
+            variant="outline" 
+            className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+            onClick={() => window.location.href = '/all-products'}
+          >
             Voir toutes les catégories
           </Button>
         </div>

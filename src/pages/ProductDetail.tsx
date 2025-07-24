@@ -94,9 +94,13 @@ const ProductDetail = () => {
         .select('*')
         .eq('id', id)
         .eq('status', 'active')
-        .single();
+        .maybeSingle();
 
       if (adError) throw adError;
+      if (!adData) {
+        navigate('/');
+        return;
+      }
       setAd(adData);
 
       // Increment view count
@@ -110,7 +114,7 @@ const ProductDetail = () => {
         .from('profiles')
         .select('*')
         .eq('user_id', adData.user_id)
-        .single();
+        .maybeSingle();
 
       setSeller(profileData);
 
@@ -119,7 +123,7 @@ const ProductDetail = () => {
         .from('categories')
         .select('id, name, emoji')
         .eq('id', adData.category_id)
-        .single();
+        .maybeSingle();
 
       setCategory(categoryData);
 
