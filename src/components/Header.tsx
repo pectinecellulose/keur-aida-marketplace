@@ -54,14 +54,14 @@ export function Header() {
         {/* Top bar */}
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-primary text-primary-foreground font-bold text-xl">
               K
             </div>
             <span className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
               KeurAida
             </span>
-          </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-8">
@@ -75,10 +75,10 @@ export function Header() {
                     <NavigationMenuContent>
                       <div className="grid w-96 gap-3 p-6">
                         {category.items.map((item) => (
-                          <NavigationMenuLink key={item.name} href={item.href}>
-                            <div className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground">
+                          <NavigationMenuLink key={item.name} asChild>
+                            <Link to={item.href} className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground">
                               <div className="text-sm font-medium leading-none">{item.name}</div>
-                            </div>
+                            </Link>
                           </NavigationMenuLink>
                         ))}
                       </div>
@@ -88,9 +88,12 @@ export function Header() {
               </NavigationMenuList>
             </NavigationMenu>
             
-            <a href="/deals" className="text-foreground font-medium hover:text-primary transition-colors">
-              Deals & Promos
-            </a>
+            <Link to="/all-products" className="text-foreground font-medium hover:text-primary transition-colors">
+              Tous les produits
+            </Link>
+            <Link to="/newsletter" className="text-foreground font-medium hover:text-primary transition-colors">
+              Newsletter
+            </Link>
           </div>
 
           {/* Search Bar */}
@@ -198,22 +201,35 @@ export function Header() {
                 </div>
               ))}
               
-              <div className="pt-4 border-t">
-                <a href="/deals" className="block py-2 px-3 rounded-lg hover:bg-accent transition-colors font-medium">
-                  Deals & Promotions
-                </a>
+              <div className="pt-4 border-t space-y-2">
+                <Link to="/all-products" className="block py-2 px-3 rounded-lg hover:bg-accent transition-colors font-medium">
+                  Tous les produits
+                </Link>
+                <Link to="/newsletter" className="block py-2 px-3 rounded-lg hover:bg-accent transition-colors font-medium">
+                  Newsletter
+                </Link>
               </div>
 
               <div className="flex items-center justify-center space-x-4 pt-4">
-                <Button variant="ghost" size="icon">
-                  <Heart className="h-5 w-5" />
+                <Button variant="ghost" size="icon" asChild>
+                  <Link to="/favorites">
+                    <Heart className="h-5 w-5" />
+                  </Link>
                 </Button>
-                <Button variant="ghost" size="icon">
-                  <ShoppingCart className="h-5 w-5" />
+                <Button variant="ghost" size="icon" asChild>
+                  <Link to="/cart">
+                    <ShoppingCart className="h-5 w-5" />
+                  </Link>
                 </Button>
-                <Button variant="ghost" size="icon">
-                  <User className="h-5 w-5" />
-                </Button>
+                {user ? (
+                  <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
+                    <User className="h-5 w-5" />
+                  </Button>
+                ) : (
+                  <Button variant="ghost" size="icon" onClick={() => navigate("/auth")}>
+                    <User className="h-5 w-5" />
+                  </Button>
+                )}
               </div>
             </div>
           </div>

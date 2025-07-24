@@ -14,6 +14,9 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Favorites from "./pages/Favorites";
 import Dashboard from "./pages/Dashboard";
+import AllProducts from "./pages/AllProducts";
+import ProductDetail from "./pages/ProductDetail";
+import Newsletter from "./pages/Newsletter";
 import HowItWorks from "./pages/HowItWorks";
 import PostAd from "./pages/PostAd";
 import Security from "./pages/Security";
@@ -39,6 +42,9 @@ const App = () => (
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
+                  <Route path="/all-products" element={<AllProducts />} />
+                  <Route path="/product/:id" element={<ProductDetail />} />
+                  <Route path="/newsletter" element={<Newsletter />} />
                   <Route path="/category/:categorySlug" element={<Categories />} />
                   <Route path="/category/:categorySlug/:subcategorySlug" element={<Categories />} />
                   <Route path="/cart" element={<Cart />} />

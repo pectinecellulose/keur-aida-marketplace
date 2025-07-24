@@ -118,7 +118,10 @@ export function FeaturedProducts() {
 
                 {/* Bottom overlay with action */}
                 <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <Button className="w-full bg-primary hover:bg-primary-dark text-primary-foreground shadow-lg">
+                  <Button 
+                    className="w-full bg-primary hover:bg-primary-dark text-primary-foreground shadow-lg"
+                    onClick={() => window.location.href = `/product/${product.id}`}
+                  >
                     <ShoppingCart className="w-4 h-4 mr-2" />
                     Voir l'annonce
                   </Button>
@@ -169,7 +172,11 @@ export function FeaturedProducts() {
         </div>
 
         <div className="text-center mt-12 animate-fade-in" style={{ animationDelay: '0.6s' }}>
-          <Button size="lg" className="bg-primary hover:bg-primary-dark text-primary-foreground shadow-lg">
+          <Button 
+            size="lg" 
+            className="bg-primary hover:bg-primary-dark text-primary-foreground shadow-lg"
+            onClick={() => window.location.href = '/all-products'}
+          >
             Voir toutes les annonces premium
           </Button>
         </div>
