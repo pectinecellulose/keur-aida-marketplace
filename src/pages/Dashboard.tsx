@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/use-auth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { SellerProfile } from '@/components/SellerProfile';
 
 interface Ad {
   id: string;
@@ -207,8 +208,10 @@ export default function Dashboard() {
                               <Eye className="w-4 h-4" />
                             </Link>
                           </Button>
-                          <Button variant="outline" size="icon">
-                            <Edit className="w-4 h-4" />
+                          <Button variant="outline" size="icon" asChild>
+                            <Link to={`/edit-ad/${ad.id}`}>
+                              <Edit className="w-4 h-4" />
+                            </Link>
                           </Button>
                           <Button 
                             variant="outline" 
@@ -235,11 +238,7 @@ export default function Dashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground">
-                    Fonctionnalité de gestion du profil à venir...
-                  </p>
-                </div>
+                <SellerProfile />
               </CardContent>
             </Card>
           </TabsContent>

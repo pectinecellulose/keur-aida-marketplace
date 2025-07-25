@@ -28,6 +28,7 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import EditAd from "./pages/EditAd";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,7 @@ const App = () => (
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/favorites" element={<Favorites />} />
                   <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/edit-ad/:id" element={<EditAd />} />
                   <Route path="/how-it-works" element={<HowItWorks />} />
                   <Route path="/post-ad" element={<PostAd />} />
                   <Route path="/security" element={<Security />} />
