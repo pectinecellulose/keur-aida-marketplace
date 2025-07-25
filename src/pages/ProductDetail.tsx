@@ -438,17 +438,60 @@ const ProductDetail = () => {
                         Envoyer un message
                       </Button>
                       {ad.contact_phone && (
-                        <Button variant="outline" className="w-full">
-                          <Phone className="h-4 w-4 mr-2" />
-                          Appeler
-                        </Button>
+                        <>
+                          <Button 
+                            variant="outline" 
+                            className="w-full bg-green-50 border-green-200 hover:bg-green-100 text-green-700"
+                            onClick={() => window.open(`https://wa.me/221${ad.contact_phone!.replace(/\D/g, '')}`, '_blank')}
+                          >
+                            <MessageCircle className="h-4 w-4 mr-2" />
+                            WhatsApp
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            className="w-full"
+                            onClick={() => window.open(`tel:+221${ad.contact_phone!.replace(/\D/g, '')}`, '_blank')}
+                          >
+                            <Phone className="h-4 w-4 mr-2" />
+                            Appeler
+                          </Button>
+                        </>
                       )}
                       {ad.contact_email && (
-                        <Button variant="outline" className="w-full">
+                        <Button 
+                          variant="outline" 
+                          className="w-full"
+                          onClick={() => window.open(`mailto:${ad.contact_email}`, '_blank')}
+                        >
                           <Mail className="h-4 w-4 mr-2" />
                           Envoyer un email
                         </Button>
                       )}
+                      
+                      {/* Contact du site KeurAida */}
+                      <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+                        <p className="text-xs text-muted-foreground mb-2">Besoin d'aide avec cette annonce ?</p>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Button 
+                            size="sm"
+                            variant="outline"
+                            className="text-xs"
+                            onClick={() => window.open('https://wa.me/221785973747', '_blank')}
+                          >
+                            <MessageCircle className="w-3 h-3 mr-1" />
+                            Support
+                          </Button>
+                          <Button 
+                            size="sm"
+                            variant="outline"
+                            className="text-xs"
+                            onClick={() => window.open('mailto:cbteranga@gmail.com', '_blank')}
+                          >
+                            <Mail className="w-3 h-3 mr-1" />
+                            Email
+                          </Button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}

@@ -18,10 +18,20 @@ interface Category {
   id: string;
   name: string;
   slug: string;
+  parent_id?: string;
+}
+
+interface CategoryField {
+  name: string;
+  type: 'text' | 'number' | 'select';
+  required: boolean;
+  options?: string[];
 }
 
 export default function PostAd() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [categoryFields, setCategoryFields] = useState<CategoryField[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [images, setImages] = useState<string[]>([]);
   const { user } = useAuth();
@@ -40,7 +50,7 @@ export default function PostAd() {
     try {
       const { data, error } = await supabase
         .from('categories')
-        .select('id, name, slug')
+        .select('id, name, slug, parent_id')
         .eq('is_active', true)
         .order('name');
 
@@ -49,6 +59,53 @@ export default function PostAd() {
     } catch (error) {
       console.error('Error loading categories:', error);
     }
+  };
+
+  const getCategoryFields = (categoryId: string): CategoryField[] => {
+    const category = categories.find(c => c.id === categoryId);
+    if (!category) return [];
+
+    // Champs spécifiques selon la catégorie
+    const commonFields: CategoryField[] = [
+      { name: 'brand', type: 'text', required: false },
+      { name: 'model', type: 'text', required: false }
+    ];
+
+    switch (category.slug) {
+      case 'automobiles':
+        return [
+          ...commonFields,
+          { name: 'year', type: 'number', required: true },
+          { name: 'mileage', type: 'number', required: true },
+          { name: 'fuel_type', type: 'select', required: true, options: ['Essence', 'Diesel', 'Électrique', 'Hybride'] },
+          { name: 'transmission', type: 'select', required: true, options: ['Manuelle', 'Automatique'] }
+        ];
+      case 'immobilier':
+        return [
+          { name: 'surface', type: 'number', required: true },
+          { name: 'rooms', type: 'number', required: true },
+          { name: 'property_type', type: 'select', required: true, options: ['Appartement', 'Maison', 'Studio', 'Villa'] }
+        ];
+      case 'electronique':
+        return [
+          ...commonFields,
+          { name: 'warranty', type: 'select', required: false, options: ['Sous garantie', 'Hors garantie'] },
+          { name: 'storage', type: 'text', required: false }
+        ];
+      case 'vetements':
+        return [
+          { name: 'size', type: 'select', required: true, options: ['XS', 'S', 'M', 'L', 'XL', 'XXL'] },
+          { name: 'color', type: 'text', required: true },
+          { name: 'material', type: 'text', required: false }
+        ];
+      default:
+        return commonFields;
+    }
+  };
+
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    setCategoryFields(getCategoryFields(categoryId));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -182,19 +239,56 @@ export default function PostAd() {
 
                 <div>
                   <Label htmlFor="category">Catégorie *</Label>
-                  <Select name="category" required>
+                  <Select name="category" required onValueChange={handleCategoryChange}>
                     <SelectTrigger>
                       <SelectValue placeholder="Choisir une catégorie" />
                     </SelectTrigger>
                     <SelectContent>
-                      {categories.map((category) => (
+                      {categories.filter(c => !c.parent_id).map((category) => (
                         <SelectItem key={category.id} value={category.id}>
                           {category.name}
+                        </SelectItem>
+                      ))}
+                      {categories.filter(c => c.parent_id).map((subcategory) => (
+                        <SelectItem key={subcategory.id} value={subcategory.id}>
+                          └ {subcategory.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
+
+                {/* Champs spécifiques à la catégorie */}
+                {categoryFields.map((field) => (
+                  <div key={field.name}>
+                    <Label htmlFor={field.name}>
+                      {field.name.charAt(0).toUpperCase() + field.name.slice(1).replace('_', ' ')}
+                      {field.required && ' *'}
+                    </Label>
+                    {field.type === 'select' ? (
+                      <Select name={field.name} required={field.required}>
+                        <SelectTrigger>
+                          <SelectValue placeholder={`Choisir ${field.name}`} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {field.options?.map((option) => (
+                            <SelectItem key={option} value={option}>
+                              {option}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Input 
+                        id={field.name}
+                        name={field.name}
+                        type={field.type}
+                        required={field.required}
+                        placeholder={`Entrer ${field.name}`}
+                      />
+                    )}
+                  </div>
+                ))}
 
                 <div>
                   <Label htmlFor="description">Description *</Label>
