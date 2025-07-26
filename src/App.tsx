@@ -29,6 +29,11 @@ import Privacy from "./pages/Privacy";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import EditAd from "./pages/EditAd";
+import Profile from "./pages/Profile";
+import Legal from "./pages/Legal";
+import Cookies from "./pages/Cookies";
+import Status from "./pages/Status";
+import Report from "./pages/Report";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +69,11 @@ const App = () => (
                   <Route path="/terms" element={<Terms />} />
                   <Route path="/privacy" element={<Privacy />} />
                   <Route path="/admin" element={<Admin />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/legal" element={<Legal />} />
+                  <Route path="/cookies" element={<Cookies />} />
+                  <Route path="/status" element={<Status />} />
+                  <Route path="/report" element={<Report />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

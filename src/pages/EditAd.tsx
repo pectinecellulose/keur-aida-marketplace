@@ -157,10 +157,10 @@ export default function EditAd() {
           is_negotiable: formData.is_negotiable,
           is_featured: formData.is_featured,
           is_urgent: formData.is_urgent,
-          status: formData.status,
-          updated_at: new Date().toISOString()
+          status: formData.status
         })
-        .eq('id', ad.id);
+        .eq('id', ad.id)
+        .eq('user_id', user.id);
 
       if (error) throw error;
 
