@@ -18,7 +18,9 @@ interface Category {
   id: string;
   name: string;
   slug: string;
+  emoji?: string;
   parent_id?: string;
+  display_order?: number;
 }
 
 interface CategoryField {
@@ -48,11 +50,12 @@ export default function PostAd() {
 
   const loadCategories = async () => {
     try {
+      // Charger toutes les catégories et sous-catégories avec optimisation
       const { data, error } = await supabase
         .from('categories')
-        .select('id, name, slug, parent_id')
+        .select('id, name, slug, emoji, parent_id, display_order')
         .eq('is_active', true)
-        .order('name');
+        .order('parent_id, display_order, name');
 
       if (error) throw error;
       setCategories(data || []);
@@ -243,18 +246,23 @@ export default function PostAd() {
                     <SelectTrigger>
                       <SelectValue placeholder="Choisir une catégorie" />
                     </SelectTrigger>
-                    <SelectContent>
-                      {categories.filter(c => !c.parent_id).map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                      {categories.filter(c => c.parent_id).map((subcategory) => (
-                        <SelectItem key={subcategory.id} value={subcategory.id}>
-                          └ {subcategory.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
+                     <SelectContent>
+                       {categories
+                         .filter(c => !c.parent_id)
+                         .map((parentCategory) => [
+                           <SelectItem key={parentCategory.id} value={parentCategory.id}>
+                             {parentCategory.emoji || '📁'} {parentCategory.name}
+                           </SelectItem>,
+                           ...categories
+                             .filter(subCategory => subCategory.parent_id === parentCategory.id)
+                             .map((subCategory) => (
+                               <SelectItem key={subCategory.id} value={subCategory.id}>
+                                 ├─ {subCategory.emoji || '📄'} {subCategory.name}
+                               </SelectItem>
+                             ))
+                         ])
+                         .flat()}
+                     </SelectContent>
                   </Select>
                 </div>
 

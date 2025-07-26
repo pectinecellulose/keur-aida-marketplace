@@ -103,11 +103,14 @@ const ProductDetail = () => {
       }
       setAd(adData);
 
-      // Increment view count
-      await supabase
-        .from('ads')
-        .update({ views_count: (adData.views_count || 0) + 1 })
-        .eq('id', id);
+      // Utiliser la fonction sécurisée pour incrémenter les vues
+      const { error: viewError } = await supabase.rpc('increment_ad_views', {
+        ad_uuid: id
+      });
+
+      if (viewError) {
+        console.warn('Error incrementing views:', viewError);
+      }
 
       // Fetch seller profile
       const { data: profileData } = await supabase
