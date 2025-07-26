@@ -443,7 +443,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment_ad_views: {
+        Args: { ad_uuid: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
