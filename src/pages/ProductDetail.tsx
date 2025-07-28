@@ -445,7 +445,18 @@ const ProductDetail = () => {
                           <Button 
                             variant="outline" 
                             className="w-full bg-green-50 border-green-200 hover:bg-green-100 text-green-700"
-                            onClick={() => window.open(`https://wa.me/221${ad.contact_phone!.replace(/\D/g, '')}`, '_blank')}
+                            onClick={() => {
+                              const message = `Bonjour, je suis intéressé(e) par votre annonce:
+      
+🏷️ *${ad.title}*
+💰 Prix: ${formatPrice(ad.price, ad.currency)}
+📍 Lieu: ${ad.city}
+🔗 Lien: ${window.location.href}
+
+Pourriez-vous me donner plus d'informations?`;
+                              const encodedMessage = encodeURIComponent(message);
+                              window.open(`https://wa.me/221${ad.contact_phone!.replace(/\D/g, '')}?text=${encodedMessage}`, '_blank');
+                            }}
                           >
                             <MessageCircle className="h-4 w-4 mr-2" />
                             WhatsApp

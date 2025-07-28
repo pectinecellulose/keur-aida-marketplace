@@ -71,9 +71,19 @@ export function RecentProducts() {
     return `Il y a ${Math.floor(diffInDays / 7)} semaines`;
   };
 
-  const handleContact = (type: 'whatsapp' | 'phone' | 'email', contact: string) => {
+  const handleContact = (type: 'whatsapp' | 'phone' | 'email', contact: string, ad: Ad) => {
     if (type === 'whatsapp') {
-      window.open(`https://wa.me/221${contact.replace(/\D/g, '')}`, '_blank');
+      const message = `Bonjour, je suis intéressé(e) par votre annonce:
+      
+🏷️ *${ad.title}*
+💰 Prix: ${formatPrice(ad.price, ad.currency)}
+📍 Lieu: ${ad.city}
+🔗 Lien: ${window.location.origin}/product/${ad.id}
+
+Pourriez-vous me donner plus d'informations?`;
+      
+      const encodedMessage = encodeURIComponent(message);
+      window.open(`https://wa.me/221${contact.replace(/\D/g, '')}?text=${encodedMessage}`, '_blank');
     } else if (type === 'phone') {
       window.open(`tel:+221${contact.replace(/\D/g, '')}`, '_blank');
     } else if (type === 'email') {
@@ -181,7 +191,7 @@ export function RecentProducts() {
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            handleContact('whatsapp', ad.contact_phone!);
+                            handleContact('whatsapp', ad.contact_phone!, ad);
                           }}
                         >
                           <MessageCircle className="w-3 h-3 mr-1" />
@@ -193,7 +203,7 @@ export function RecentProducts() {
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            handleContact('phone', ad.contact_phone!);
+                            handleContact('phone', ad.contact_phone!, ad);
                           }}
                         >
                           <Phone className="w-3 h-3" />
@@ -207,7 +217,7 @@ export function RecentProducts() {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          handleContact('email', ad.contact_email!);
+                          handleContact('email', ad.contact_email!, ad);
                         }}
                       >
                         <Mail className="w-3 h-3" />
