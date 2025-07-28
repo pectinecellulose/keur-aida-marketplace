@@ -64,43 +64,111 @@ export default function PostAd() {
     }
   };
 
-  const getCategoryFields = (categoryId: string): CategoryField[] => {
-    const category = categories.find(c => c.id === categoryId);
-    if (!category) return [];
-
-    // Champs spécifiques selon la catégorie
+  const getCategoryFields = (categorySlug: string, parentSlug?: string): CategoryField[] => {
     const commonFields: CategoryField[] = [
       { name: 'brand', type: 'text', required: false },
       { name: 'model', type: 'text', required: false }
     ];
 
-    switch (category.slug) {
+    // Questions spécifiques selon la catégorie principale et sous-catégorie
+    switch (parentSlug || categorySlug) {
       case 'automobiles':
-        return [
-          ...commonFields,
-          { name: 'year', type: 'number', required: true },
-          { name: 'mileage', type: 'number', required: true },
-          { name: 'fuel_type', type: 'select', required: true, options: ['Essence', 'Diesel', 'Électrique', 'Hybride'] },
-          { name: 'transmission', type: 'select', required: true, options: ['Manuelle', 'Automatique'] }
-        ];
+        switch (categorySlug) {
+          case 'voitures':
+            return [
+              ...commonFields,
+              { name: 'year', type: 'number', required: true },
+              { name: 'mileage', type: 'number', required: true },
+              { name: 'fuel_type', type: 'select', required: true, options: ['Essence', 'Diesel', 'Électrique', 'Hybride'] },
+              { name: 'transmission', type: 'select', required: true, options: ['Manuelle', 'Automatique'] },
+              { name: 'doors', type: 'select', required: true, options: ['2', '3', '4', '5'] }
+            ];
+          case 'motos':
+            return [
+              ...commonFields,
+              { name: 'year', type: 'number', required: true },
+              { name: 'mileage', type: 'number', required: true },
+              { name: 'engine_size', type: 'number', required: true },
+              { name: 'license_required', type: 'select', required: true, options: ['A1', 'A2', 'A'] }
+            ];
+          case 'pieces-auto':
+            return [
+              ...commonFields,
+              { name: 'compatibility', type: 'text', required: true },
+              { name: 'part_condition', type: 'select', required: true, options: ['Neuf', 'Occasion', 'Reconditionné'] }
+            ];
+          default:
+            return [...commonFields, { name: 'year', type: 'number', required: true }];
+        }
+      
       case 'immobilier':
-        return [
-          { name: 'surface', type: 'number', required: true },
-          { name: 'rooms', type: 'number', required: true },
-          { name: 'property_type', type: 'select', required: true, options: ['Appartement', 'Maison', 'Studio', 'Villa'] }
-        ];
+        switch (categorySlug) {
+          case 'vente':
+            return [
+              { name: 'surface', type: 'number', required: true },
+              { name: 'rooms', type: 'number', required: true },
+              { name: 'bedrooms', type: 'number', required: true },
+              { name: 'bathrooms', type: 'number', required: true },
+              { name: 'property_type', type: 'select', required: true, options: ['Appartement', 'Maison', 'Villa', 'Terrain', 'Local commercial'] },
+              { name: 'furnished', type: 'select', required: false, options: ['Meublé', 'Non meublé', 'Semi-meublé'] }
+            ];
+          case 'location':
+            return [
+              { name: 'surface', type: 'number', required: true },
+              { name: 'rooms', type: 'number', required: true },
+              { name: 'bedrooms', type: 'number', required: true },
+              { name: 'monthly_rent', type: 'number', required: true },
+              { name: 'deposit', type: 'number', required: true },
+              { name: 'furnished', type: 'select', required: true, options: ['Meublé', 'Non meublé', 'Semi-meublé'] }
+            ];
+          default:
+            return [
+              { name: 'surface', type: 'number', required: true },
+              { name: 'rooms', type: 'number', required: true },
+              { name: 'property_type', type: 'select', required: true, options: ['Appartement', 'Maison', 'Villa', 'Studio'] }
+            ];
+        }
+      
       case 'electronique':
-        return [
-          ...commonFields,
-          { name: 'warranty', type: 'select', required: false, options: ['Sous garantie', 'Hors garantie'] },
-          { name: 'storage', type: 'text', required: false }
-        ];
+        switch (categorySlug) {
+          case 'smartphones':
+            return [
+              ...commonFields,
+              { name: 'storage', type: 'select', required: true, options: ['16GB', '32GB', '64GB', '128GB', '256GB', '512GB', '1TB'] },
+              { name: 'color', type: 'text', required: false },
+              { name: 'warranty', type: 'select', required: false, options: ['Sous garantie', 'Hors garantie'] },
+              { name: 'network', type: 'select', required: true, options: ['3G', '4G', '5G'] }
+            ];
+          case 'ordinateurs':
+            return [
+              ...commonFields,
+              { name: 'processor', type: 'text', required: true },
+              { name: 'ram', type: 'select', required: true, options: ['4GB', '8GB', '16GB', '32GB', '64GB'] },
+              { name: 'storage', type: 'text', required: true },
+              { name: 'screen_size', type: 'number', required: false }
+            ];
+          default:
+            return [
+              ...commonFields,
+              { name: 'warranty', type: 'select', required: false, options: ['Sous garantie', 'Hors garantie'] }
+            ];
+        }
+      
       case 'vetements':
         return [
           { name: 'size', type: 'select', required: true, options: ['XS', 'S', 'M', 'L', 'XL', 'XXL'] },
           { name: 'color', type: 'text', required: true },
-          { name: 'material', type: 'text', required: false }
+          { name: 'material', type: 'text', required: false },
+          { name: 'gender', type: 'select', required: true, options: ['Homme', 'Femme', 'Unisexe', 'Enfant'] }
         ];
+      
+      case 'maison-jardin':
+        return [
+          { name: 'material', type: 'text', required: false },
+          { name: 'dimensions', type: 'text', required: false },
+          { name: 'room_type', type: 'select', required: false, options: ['Salon', 'Chambre', 'Cuisine', 'Salle de bain', 'Jardin', 'Garage'] }
+        ];
+      
       default:
         return commonFields;
     }
@@ -108,7 +176,11 @@ export default function PostAd() {
 
   const handleCategoryChange = (categoryId: string) => {
     setSelectedCategory(categoryId);
-    setCategoryFields(getCategoryFields(categoryId));
+    const category = categories.find(c => c.id === categoryId);
+    if (category) {
+      const parentCategory = category.parent_id ? categories.find(c => c.id === category.parent_id) : null;
+      setCategoryFields(getCategoryFields(category.slug, parentCategory?.slug));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
