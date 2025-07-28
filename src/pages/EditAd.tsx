@@ -138,31 +138,57 @@ export default function EditAd() {
     e.preventDefault();
     if (!user || !ad) return;
 
+    // Validation des champs requis
+    if (!formData.title || !formData.description || !formData.location || !formData.city) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez remplir tous les champs obligatoires.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.category_id) {
+      toast({
+        title: "Erreur", 
+        description: "Veuillez sélectionner une catégorie.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSaving(true);
     
     try {
+      const updateData = {
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        price: formData.price ? parseFloat(formData.price) : null,
+        currency: formData.currency,
+        category_id: formData.category_id,
+        condition: formData.condition || null,
+        location: formData.location.trim(),
+        city: formData.city.trim(),
+        contact_phone: formData.contact_phone?.trim() || null,
+        contact_email: formData.contact_email?.trim() || null,
+        is_negotiable: Boolean(formData.is_negotiable),
+        is_featured: Boolean(formData.is_featured),
+        is_urgent: Boolean(formData.is_urgent),
+        status: formData.status
+      };
+
+      console.log('Updating ad with data:', updateData);
+
       const { error } = await supabase
         .from('ads')
-        .update({
-          title: formData.title,
-          description: formData.description,
-          price: parseFloat(formData.price) || null,
-          currency: formData.currency,
-          category_id: formData.category_id,
-          condition: formData.condition,
-          location: formData.location,
-          city: formData.city,
-          contact_phone: formData.contact_phone,
-          contact_email: formData.contact_email,
-          is_negotiable: formData.is_negotiable,
-          is_featured: formData.is_featured,
-          is_urgent: formData.is_urgent,
-          status: formData.status
-        })
+        .update(updateData)
         .eq('id', ad.id)
         .eq('user_id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       toast({
         title: "Annonce modifiée",
@@ -170,11 +196,11 @@ export default function EditAd() {
       });
 
       navigate('/dashboard');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating ad:', error);
       toast({
         title: "Erreur",
-        description: "Impossible de mettre à jour l'annonce.",
+        description: error.message || "Impossible de mettre à jour l'annonce.",
         variant: "destructive",
       });
     } finally {
