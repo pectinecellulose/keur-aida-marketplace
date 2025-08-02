@@ -27,6 +27,7 @@ import Contact from "./pages/Contact";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Admin from "./pages/Admin";
+import AdminLogin from "./pages/AdminLogin";
 import NotFound from "./pages/NotFound";
 import EditAd from "./pages/EditAd";
 import Profile from "./pages/Profile";
@@ -69,6 +70,7 @@ const App = () => (
                   <Route path="/terms" element={<Terms />} />
                   <Route path="/privacy" element={<Privacy />} />
                   <Route path="/admin" element={<Admin />} />
+                  <Route path="/admin-login" element={<AdminLogin />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/legal" element={<Legal />} />
                   <Route path="/cookies" element={<Cookies />} />

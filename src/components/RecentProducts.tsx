@@ -18,6 +18,7 @@ interface Ad {
   location: string;
   is_urgent: boolean;
   is_featured: boolean;
+  is_admin_product?: boolean;
   condition?: string;
   created_at: string;
   views_count: number;
@@ -224,17 +225,19 @@ Pourriez-vous me donner plus d'informations?`;
                       </Button>
                     )}
                   </div>
-                  <Button 
-                    className="w-full bg-primary hover:bg-primary-dark text-primary-foreground shadow-lg"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      addToCart(ad.id);
-                    }}
-                  >
-                    <ShoppingCart className="w-4 h-4 mr-2" />
-                    Ajouter au panier
-                  </Button>
+                  {ad.is_admin_product && (
+                    <Button 
+                      className="w-full bg-primary hover:bg-primary-dark text-primary-foreground shadow-lg"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        addToCart(ad.id);
+                      }}
+                    >
+                      <ShoppingCart className="w-4 h-4 mr-2" />
+                      Ajouter au panier
+                    </Button>
+                  )}
                 </div>
               </div>
 

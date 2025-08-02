@@ -110,10 +110,18 @@ export default function Admin() {
     }
   };
 
-  if (!user) {
+  // Vérifier l'authentification admin
+  const isAdminLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+
+  if (!isAdminLoggedIn) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-lg text-muted-foreground">Accès non autorisé</p>
+        <div className="text-center">
+          <p className="text-lg text-muted-foreground mb-4">Accès non autorisé</p>
+          <Button onClick={() => window.location.href = '/admin-login'}>
+            Se connecter
+          </Button>
+        </div>
       </div>
     );
   }

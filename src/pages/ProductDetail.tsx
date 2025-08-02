@@ -39,6 +39,7 @@ interface Ad {
   is_featured: boolean;
   is_urgent: boolean;
   is_negotiable: boolean;
+  is_admin_product?: boolean;
   condition: string;
   created_at: string;
   views_count: number;
@@ -384,25 +385,27 @@ const ProductDetail = () => {
                   </div>
                 )}
 
-                <div className="flex space-x-2 mb-6">
-                  <Button
-                    onClick={handleAddToCart}
-                    disabled={cartLoading}
-                    className="flex-1"
-                  >
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    Ajouter au panier
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={handleToggleFavorite}
-                  >
-                    <Heart className={`h-4 w-4 ${isFavorite(ad.id) ? 'fill-red-500 text-red-500' : ''}`} />
-                  </Button>
-                  <Button variant="outline" onClick={handleShare}>
-                    <Share2 className="h-4 w-4" />
-                  </Button>
-                </div>
+                {ad.is_admin_product && (
+                  <div className="flex space-x-2 mb-6">
+                    <Button
+                      onClick={handleAddToCart}
+                      disabled={cartLoading}
+                      className="flex-1"
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-2" />
+                      Ajouter au panier
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={handleToggleFavorite}
+                    >
+                      <Heart className={`h-4 w-4 ${isFavorite(ad.id) ? 'fill-red-500 text-red-500' : ''}`} />
+                    </Button>
+                    <Button variant="outline" onClick={handleShare}>
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
 
                 <Separator className="my-6" />
 

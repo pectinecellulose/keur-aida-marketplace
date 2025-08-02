@@ -27,6 +27,7 @@ export type Database = {
           expires_at: string | null
           id: string
           images: string[] | null
+          is_admin_product: boolean | null
           is_featured: boolean | null
           is_negotiable: boolean | null
           is_urgent: boolean | null
@@ -50,6 +51,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           images?: string[] | null
+          is_admin_product?: boolean | null
           is_featured?: boolean | null
           is_negotiable?: boolean | null
           is_urgent?: boolean | null
@@ -73,6 +75,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           images?: string[] | null
+          is_admin_product?: boolean | null
           is_featured?: boolean | null
           is_negotiable?: boolean | null
           is_urgent?: boolean | null
