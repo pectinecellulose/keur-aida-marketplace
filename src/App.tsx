@@ -13,6 +13,7 @@ import Categories from "./pages/Categories";
 import CategoryPage from "./pages/CategoryPage";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import OrderConfirmation from "./pages/OrderConfirmation";
 import Favorites from "./pages/Favorites";
 import Dashboard from "./pages/Dashboard";
 import AllProducts from "./pages/AllProducts";
@@ -58,6 +59,7 @@ const App = () => (
                   <Route path="/category/:categorySlug/:subcategorySlug" element={<CategoryPage />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/order-confirmation" element={<OrderConfirmation />} />
                   <Route path="/favorites" element={<Favorites />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/edit-ad/:id" element={<EditAd />} />
