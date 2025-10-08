@@ -26,8 +26,7 @@ export function CategoriesSection() {
         .from('categories')
         .select('id, name, slug, emoji')
         .eq('is_active', true)
-        .order('display_order')
-        .limit(6);
+        .order('display_order');
 
       if (error) throw error;
 
@@ -69,77 +68,55 @@ export function CategoriesSection() {
   }
 
   return (
-    <section className="py-20 bg-surface">
+    <section className="py-12 bg-surface">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16 animate-fade-in">
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 mb-4">
-            <TrendingUp className="w-4 h-4 mr-2" />
-            <span className="text-sm font-medium">Catégories populaires</span>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <TrendingUp className="w-5 h-5 text-primary" />
+            </div>
+            <h2 className="text-2xl font-bold text-foreground">
+              Toutes les catégories
+            </h2>
           </div>
           
-          <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">
-            Trouvez ce que vous
-            <span className="block bg-gradient-primary bg-clip-text text-transparent">
-              cherchez facilement
-            </span>
-          </h2>
-          
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Des milliers d'annonces dans toutes les catégories. 
-            Découvrez les offres les plus récentes et les meilleures affaires.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          {categories.map((category, index) => (
-            <Card 
-              key={category.id}
-              className="group cursor-pointer border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 animate-fade-in-up bg-card/50 backdrop-blur-sm"
-              style={{ animationDelay: `${index * 0.1}s` }}
-              onClick={() => window.location.href = `/category/${category.slug}`}
-            >
-              <CardContent className="p-8">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="p-4 rounded-2xl bg-gradient-to-br from-primary to-primary/80 shadow-lg">
-                    <span className="text-4xl">{category.emoji}</span>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-foreground">
-                      {new Intl.NumberFormat('fr-FR').format(category.ads_count || 0)}
-                    </div>
-                    <div className="text-sm text-muted-foreground">annonces</div>
-                  </div>
-                </div>
-                
-                <h3 className="text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                  {category.name}
-                </h3>
-                
-                <p className="text-muted-foreground text-sm mb-4">
-                  Découvrez notre sélection de produits et services de qualité
-                </p>
-
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start text-primary hover:bg-primary/10 p-0 h-auto font-medium"
-                >
-                  Explorer cette catégorie
-                  <Zap className="w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <div className="text-center animate-fade-in" style={{ animationDelay: '0.8s' }}>
           <Button 
-            size="lg" 
-            variant="outline" 
-            className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+            variant="ghost" 
+            size="sm"
+            className="text-primary hover:bg-primary/10"
             onClick={() => window.location.href = '/all-products'}
           >
-            Voir toutes les catégories
+            Tout voir
+            <Zap className="w-4 h-4 ml-2" />
           </Button>
+        </div>
+
+        <div className="relative">
+          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+            {categories.map((category) => (
+              <Card 
+                key={category.id}
+                className="group cursor-pointer flex-shrink-0 w-[160px] border hover:border-primary/50 transition-all duration-300 hover:shadow-lg snap-start"
+                onClick={() => window.location.href = `/category/${category.slug}`}
+              >
+                <CardContent className="p-4 text-center">
+                  <div className="mb-3 flex justify-center">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 group-hover:from-primary/20 group-hover:to-primary/10 transition-colors">
+                      <span className="text-3xl">{category.emoji}</span>
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-sm font-semibold text-foreground mb-1 group-hover:text-primary transition-colors line-clamp-2">
+                    {category.name}
+                  </h3>
+                  
+                  <p className="text-xs text-muted-foreground">
+                    {new Intl.NumberFormat('fr-FR').format(category.ads_count || 0)} annonces
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </div>
     </section>
