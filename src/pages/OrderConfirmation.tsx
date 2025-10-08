@@ -75,14 +75,14 @@ export default function OrderConfirmation() {
               <p className="text-sm text-muted-foreground">
                 Besoin d'aide ? Contactez-nous au{' '}
                 <a 
-                  href="tel:+221775263847" 
+                  href="tel:+221785087237" 
                   className="text-primary hover:underline font-medium"
                 >
-                  77 526 38 47
+                  78 508 72 37
                 </a>
                 {' '}ou par{' '}
                 <a 
-                  href="mailto:contact@keuraida.com" 
+                  href="mailto:cbteranga@gmail.com" 
                   className="text-primary hover:underline font-medium"
                 >
                   email

@@ -35,8 +35,8 @@ const Legal = () => {
 
             <h2>Contact</h2>
             <p>
-              Email : contact@keuraida.com<br />
-              Téléphone : +221 XX XX XX XX
+              Email : cbteranga@gmail.com<br />
+              Téléphone : +221 78 508 72 37
             </p>
 
             <h2>Propriété intellectuelle</h2>

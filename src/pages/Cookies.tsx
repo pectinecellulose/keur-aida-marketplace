@@ -54,7 +54,7 @@ const Cookies = () => {
             <h2>Contact</h2>
             <p>
               Si vous avez des questions concernant notre politique 
-              des cookies, veuillez nous contacter à : contact@keuraida.com
+              des cookies, veuillez nous contacter à : cbteranga@gmail.com
             </p>
           </CardContent>
         </Card>

@@ -77,11 +77,11 @@ export function Footer() {
               <div className="space-y-3 mb-6">
                 <div className="flex items-center text-muted-foreground">
                   <Phone className="w-4 h-4 mr-3 text-primary" />
-                  <span>+221 77 123 45 67</span>
+                  <span>+221 78 508 72 37</span>
                 </div>
                 <div className="flex items-center text-muted-foreground">
                   <Mail className="w-4 h-4 mr-3 text-primary" />
-                  <span>contact@keuraida.com</span>
+                  <span>cbteranga@gmail.com</span>
                 </div>
                 <div className="flex items-center text-muted-foreground">
                   <MapPin className="w-4 h-4 mr-3 text-primary" />
