@@ -438,74 +438,85 @@ const ProductDetail = () => {
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <Button variant="outline" className="w-full">
-                        <MessageCircle className="h-4 w-4 mr-2" />
-                        Envoyer un message
-                      </Button>
-                      {ad.contact_phone && (
-                        <>
-                          <Button 
-                            variant="outline" 
-                            className="w-full bg-green-50 border-green-200 hover:bg-green-100 text-green-700"
-                            onClick={() => {
-                              const message = `Bonjour, je suis intéressé(e) par votre annonce:
-      
+                    <div className="space-y-3">
+                      <div className="bg-primary/5 p-4 rounded-lg border border-primary/20">
+                        <h4 className="font-semibold text-sm mb-3 flex items-center">
+                          <Phone className="w-4 h-4 mr-2 text-primary" />
+                          Contacter le vendeur
+                        </h4>
+                        
+                        {ad.contact_phone ? (
+                          <div className="space-y-2">
+                            <Button 
+                              variant="default" 
+                              className="w-full bg-green-600 hover:bg-green-700 text-white"
+                              onClick={() => {
+                                const message = `Bonjour, je suis intéressé(e) par votre annonce:
+
 🏷️ *${ad.title}*
 💰 Prix: ${formatPrice(ad.price, ad.currency)}
 📍 Lieu: ${ad.city}
 🔗 Lien: ${window.location.href}
 
 Pourriez-vous me donner plus d'informations?`;
-                              const encodedMessage = encodeURIComponent(message);
-                              window.open(`https://wa.me/221${ad.contact_phone!.replace(/\D/g, '')}?text=${encodedMessage}`, '_blank');
-                            }}
-                          >
-                            <MessageCircle className="h-4 w-4 mr-2" />
-                            WhatsApp
-                          </Button>
+                                const encodedMessage = encodeURIComponent(message);
+                                window.open(`https://wa.me/221${ad.contact_phone!.replace(/\D/g, '')}?text=${encodedMessage}`, '_blank');
+                              }}
+                            >
+                              <MessageCircle className="h-4 w-4 mr-2" />
+                              WhatsApp: {ad.contact_phone}
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              className="w-full"
+                              onClick={() => window.open(`tel:+221${ad.contact_phone!.replace(/\D/g, '')}`, '_blank')}
+                            >
+                              <Phone className="h-4 w-4 mr-2" />
+                              Appeler: {ad.contact_phone}
+                            </Button>
+                          </div>
+                        ) : (
+                          <p className="text-sm text-muted-foreground">Numéro non renseigné</p>
+                        )}
+
+                        {ad.contact_email && (
                           <Button 
                             variant="outline" 
-                            className="w-full"
-                            onClick={() => window.open(`tel:+221${ad.contact_phone!.replace(/\D/g, '')}`, '_blank')}
+                            className="w-full mt-2"
+                            onClick={() => window.open(`mailto:${ad.contact_email}`, '_blank')}
                           >
-                            <Phone className="h-4 w-4 mr-2" />
-                            Appeler
+                            <Mail className="h-4 w-4 mr-2" />
+                            Email: {ad.contact_email}
                           </Button>
-                        </>
-                      )}
-                      {ad.contact_email && (
-                        <Button 
-                          variant="outline" 
-                          className="w-full"
-                          onClick={() => window.open(`mailto:${ad.contact_email}`, '_blank')}
-                        >
-                          <Mail className="h-4 w-4 mr-2" />
-                          Envoyer un email
-                        </Button>
-                      )}
+                        )}
+                      </div>
+
+                      <Separator />
                       
-                      {/* Contact du site KeurAida */}
-                      <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-                        <p className="text-xs text-muted-foreground mb-2">Besoin d'aide avec cette annonce ?</p>
-                        <div className="grid grid-cols-2 gap-2">
+                      {/* Support KeurAida */}
+                      <div className="bg-muted/30 p-4 rounded-lg">
+                        <h4 className="font-semibold text-sm mb-2">Support KeurAida</h4>
+                        <p className="text-xs text-muted-foreground mb-3">
+                          Besoin d'aide ou de vérifier cette annonce ?
+                        </p>
+                        <div className="space-y-2">
                           <Button 
                             size="sm"
                             variant="outline"
-                            className="text-xs"
-                            onClick={() => window.open('https://wa.me/221785973747', '_blank')}
+                            className="w-full text-xs"
+                            onClick={() => window.open('https://wa.me/221785087237', '_blank')}
                           >
-                            <MessageCircle className="w-3 h-3 mr-1" />
-                            Support
+                            <MessageCircle className="w-3 h-3 mr-2" />
+                            WhatsApp: +221 78 508 72 37
                           </Button>
                           <Button 
                             size="sm"
                             variant="outline"
-                            className="text-xs"
+                            className="w-full text-xs"
                             onClick={() => window.open('mailto:cbteranga@gmail.com', '_blank')}
                           >
-                            <Mail className="w-3 h-3 mr-1" />
-                            Email
+                            <Mail className="w-3 h-3 mr-2" />
+                            Email: cbteranga@gmail.com
                           </Button>
                         </div>
                       </div>
